@@ -25,3 +25,8 @@
 .drag-over {
 	background-color: blue;
 }
+
+.edit { display: none; }
+.editing .edit { display: block; }
+.editing .hide-on-edit { display: none !important; }
+

@@ -42,17 +42,32 @@ if Meteor.isClient
 
 	dragSource = null
 	Template.participants.events = 
+		# New participant
 		"click button" : (event) -> 
 			Participants.insert name: $("#participant-name")[0].value, eventId	: Session.get "eventId"
 			false
 
-		"dragstart .participant"	: (event) ->
-			dragSource = this
+		# Remove participant
+		"click .icon-trash" : (event) -> Participants.remove this
 
-		"dragover .participant" 	: (event) ->
-			return if this == dragSource
-			event.srcElement.classList.add("drag-over")
+		# Edit participant name
+		"dblclick span"	: (event) ->
+			editable = $(event.srcElement.parentNode)
+			editable.addClass "editing"
+			editable.find("input").focus()
 
-		"dragleave .participant"	: (event) ->
-			return if this == dragSource
-			event.srcElement.classList.remove("drag-over")
+		"blur input"	: (event) -> exitEditMode this, event
+		"keypress input": (event) -> exitEditMode this, event if event.keyCode == 13 # enter
+
+		# Drag and drop between participants
+		"dragstart .participant": (event) -> dragSource = this
+		"dragover .participant"	: (event) ->
+			event.srcElement.classList.add "drag-over" unless this == dragSource
+		"dragleave .participant": (event) ->
+			event.srcElement.classList.remove "drag-over" unless this == dragSource 
+
+	exitEditMode = (context, event) ->
+		Participants.update {_id: context._id}, {$set: {name: event.srcElement.value}}
+		$(event.srcElement.parentNode.parentNode).removeClass "editing"
+
+

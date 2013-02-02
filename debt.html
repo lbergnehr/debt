@@ -53,7 +53,12 @@
 
 		<div class="participant-list">
 			{{#each participants}}
-			<div draggable="true" class="participant">{{name}}</div>
+			<div draggable="true" class="participant editable">
+				<span class="hide-on-edit">{{name}}</span>
+				<div class="edit">
+					<input type="text" type="text" value="{{name}}"></input>
+				</div>
+			</div>
 			<div><i class="icon-trash"></i></div>
 			{{/each}}
 		</div>
