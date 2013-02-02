@@ -36,9 +36,37 @@
 <template name="event">
 	{{#if event}}
 	<h1>{{event.name}}</h1>
+	{{> participants}}
 	{{/if}}
 
 	{{#unless event}}
 	<h1>That is not the address you are looking for...</h1>
 	{{/unless}}
 </template>
+
+<template name="participants">
+	<div class="participants">
+		<form>
+			<input type="text" id="participant-name" />
+			<button type="submit" class="btn">Add participant</button>
+		</form>
+
+		<div class="participant-list">
+			{{#each participants}}
+			<div draggable="true" class="participant">{{name}}</div>
+			<div><i class="icon-trash"></i></div>
+			{{/each}}
+		</div>
+	</div>
+</template>
+
+
+
+
+
+
+
+
+
+
+

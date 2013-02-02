@@ -16,3 +16,12 @@
 
 }
 
+.participant {
+	padding: 1em;
+	background-color: lightblue;
+	margin: 1em;
+}
+
+.drag-over {
+	background-color: blue;
+}

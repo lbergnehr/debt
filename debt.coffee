@@ -36,3 +36,23 @@ if Meteor.isClient
 				newId = Events.insert {name: textBoxValue}
 				@app.navigate newId, true
 			false
+
+	Template.participants.participants = () ->
+		Participants.find {eventId: Session.get "eventId"}
+
+	dragSource = null
+	Template.participants.events = 
+		"click button" : (event) -> 
+			Participants.insert name: $("#participant-name")[0].value, eventId	: Session.get "eventId"
+			false
+
+		"dragstart .participant"	: (event) ->
+			dragSource = this
+
+		"dragover .participant" 	: (event) ->
+			return if this == dragSource
+			event.srcElement.classList.add("drag-over")
+
+		"dragleave .participant"	: (event) ->
+			return if this == dragSource
+			event.srcElement.classList.remove("drag-over")
