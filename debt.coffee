@@ -3,6 +3,7 @@ Events = new Meteor.Collection "Event"
 Participants = new Meteor.Collection "Participants"
 
 if Meteor.isClient
+	Session.set "eventId" -1
 	# Set up Backbone router
 	Router = Backbone.Router.extend
 		routes:
@@ -28,7 +29,8 @@ if Meteor.isClient
 	Template.home.events = 
 		"keyup input"	: (event) ->
 			textBoxValue = $("input")[0].value
-			$("button").attr "disabled", (textBoxValue == null || textBoxValue == "") ? "disabled" : null
+			$("button").attr "disabled",
+				(textBoxValue == null || textBoxValue.trim() == "") ? "disabled" : null
 
 		"click button"	: (event) -> 
 			textBoxValue = $("input")[0].value
@@ -44,11 +46,11 @@ if Meteor.isClient
 	Template.participants.events = 
 		# New participant
 		"click button" : (event) -> 
-			Participants.insert name: $("#participant-name")[0].value, eventId	: Session.get "eventId"
+			addParticipant $("#participant-name")[0].value
 			false
 
 		# Remove participant
-		"click .icon-trash" : (event) -> Participants.remove this
+		"click .remove-participant" : (event) -> removeParticipant this
 
 		# Edit participant name
 		"dblclick span"	: (event) ->
@@ -63,8 +65,19 @@ if Meteor.isClient
 		"dragstart .participant": (event) -> dragSource = this
 		"dragover .participant"	: (event) ->
 			event.srcElement.classList.add "drag-over" unless this == dragSource
+			event.preventDefault()
+			false
 		"dragleave .participant": (event) ->
 			event.srcElement.classList.remove "drag-over" unless this == dragSource 
+		"drop .participant"		: (event) -> 
+			unless this == dragSource
+				console.log event
+				event.srcElement.classList.remove "drag-over"
+
+	addParticipant = (name) ->
+		Participants.insert name: name, eventId: Session.get "eventId"
+
+	removeParticipant = (participant) -> Participants.remove participant
 
 	exitEditMode = (context, event) ->
 		Participants.update {_id: context._id}, {$set: {name: event.srcElement.value}}
