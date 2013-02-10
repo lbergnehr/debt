@@ -1,0 +1,50 @@
+/* LESS declarations go here */
+
+frontColor = lightblue
+hoverColor = blue
+dragBorderColor = purple
+
+borderThickness = 2px
+
+.front-panel 
+	background-color frontColor
+
+#home  
+	@extend .front-panel
+	margin-top 10em
+	margin-left auto
+	margin-right auto
+	padding 3em
+	max-width 20em 
+
+.participant 
+	@extend .front-panel
+	padding 1em
+	margin 1em
+	border borderThickness solid transparent
+	max-width 100px
+
+.participant-expenses 
+	float right
+
+#all-participants 
+	@extend .front-panel
+	width 7em
+	height 5em
+	text-align center
+	margin-top 5em
+	margin-left auto
+	margin-right auto
+
+.drag-over 
+	background-color darken(frontColor, 30%)
+	border borderThickness dashed dragBorderColor
+
+.edit
+	display none 
+.editing  
+	.edit
+		display block  
+	.hide-on-edit
+		display none !important 
+

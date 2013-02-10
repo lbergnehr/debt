@@ -23,12 +23,12 @@
 </template>
 
 <template name="home">
-	<h1>We're home!</h1>
+	<h2>Create your event</h2>
 	<form>
 		<fieldset>
 			<legend>New event</legend>
 			<input type="text" placeholder="Name of the event">
-			<button disabled="disabled" type="subimt" class="btn">Create event</button>
+			<button disabled="disabled" type="submit" class="btn btn-primary">Create event</button>
 		</fieldset>
 	</form>
 </template>
@@ -55,7 +55,7 @@
 			{{#each participants}}
 			<div draggable="true" class="participant editable">
 				<span class="hide-on-edit">{{name}}</span>
-				<span class="participant-expenses">{{expenses}}</span>
+				<span class="expenses">{{totalExpenses}}</span>
 				<div class="edit">
 					<input type="text" type="text" value="{{name}}"></input>
 				</div>
@@ -66,6 +66,16 @@
 
 		<div id="all-participants">Everyone</div>
 	</div>
+</template>
+
+<template name="amountPopover">
+	<form>
+		<span>{{borrower}} borrowed</span>
+		<input type="number" class="borrowed-amount" /><span>{{currency}}</span>
+		<span>from {{financier}} for</span>
+		<input type="text" class="expense" />
+		<input type="submit" class="btn" />
+	</form>
 </template>
 
 
