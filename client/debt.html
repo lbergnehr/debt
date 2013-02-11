@@ -53,27 +53,43 @@
 
 		<div class="participant-list">
 			{{#each participants}}
-			<div draggable="true" class="participant editable">
-				<span class="hide-on-edit">{{name}}</span>
-				<span class="expenses">{{totalExpenses}}</span>
-				<div class="edit">
-					<input type="text" type="text" value="{{name}}"></input>
-				</div>
-			</div>
-			<div><i class="icon-trash remove-participant"></i></div>
+			{{> participant}}
 			{{/each}}
 		</div>
+	</div>
+</template>
 
-		<div id="all-participants">Everyone</div>
+<template name="participant">
+	<div draggable="true" class="participant editable">
+		<span class="hide-on-edit">{{name}}</span>
+		<span class="expenses">{{totalExpenses}}</span>
+		<div class="edit">
+			<input type="text" type="text" value="{{name}}"></input>
+		</div>
+		<div><i class="icon-trash remove-participant"></i></div>
+	</div>
+</template>
+
+<template name="summary">
+	<div id="summary">
+		<table>
+			{{#each summaries}}
+			<thead></thead>
+			<tr>
+				{{#each debts}}
+				{{/each}}
+			</tr>
+			{{/each}}
+		</table>
 	</div>
 </template>
 
 <template name="amountPopover">
 	<form>
 		<span>{{borrower}} borrowed</span>
-		<input type="number" class="borrowed-amount" /><span>{{currency}}</span>
+		<input name="borrowed-amount" type="number" class="borrowed-amount" /><span>{{currency}}</span>
 		<span>from {{financier}} for</span>
-		<input type="text" class="expense" />
+		<input name="expense" type="text" class="expense" />
 		<input type="submit" class="btn" />
 	</form>
 </template>
