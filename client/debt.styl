@@ -1,4 +1,3 @@
-/* LESS declarations go here */
 
 frontColor = lightblue
 hoverColor = blue
@@ -18,24 +17,15 @@ borderThickness = 2px
 	max-width 20em 
 
 .participant 
-	@extend .front-panel
-	padding 1em
-	margin 1em
-	border borderThickness solid transparent
-	max-width 100px
-	// position absolute
+	fill orange
+
+svg
+	margin 30px
+	border 2px dashed lightblue
+	border-radius 10px
 
 .participant-expenses 
 	float right
-
-#all-participants 
-	@extend .front-panel
-	width 7em
-	height 5em
-	text-align center
-	margin-top 5em
-	margin-left auto
-	margin-right auto
 
 .drag-over 
 	background-color darken(frontColor, 30%)
@@ -43,6 +33,7 @@ borderThickness = 2px
 
 .edit
 	display none 
+
 .editing  
 	.edit
 		display block  

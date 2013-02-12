@@ -51,23 +51,14 @@
 			<button type="submit" class="btn">Add participant</button>
 		</form>
 
-		<div class="participant-list">
-			{{#each participants}}
-			{{> participant}}
-			{{/each}}
-		</div>
+		{{#constant}}
+		<svg><g></g></svg>
+		{{/constant}}
 	</div>
 </template>
 
 <template name="participant">
-	<div draggable="true" class="participant editable">
-		<span class="hide-on-edit">{{name}}</span>
-		<span class="expenses">{{totalExpenses}}</span>
-		<div class="edit">
-			<input type="text" type="text" value="{{name}}"></input>
-		</div>
-		<div><i class="icon-trash remove-participant"></i></div>
-	</div>
+	<g></g>
 </template>
 
 <template name="summary">

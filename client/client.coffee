@@ -34,8 +34,53 @@ Template.home.events =
 			@app.navigate newId, true
 		false
 
-Template.participants.participants = () ->
-	Participants.find eventId: Session.get "eventId"
+Template.participants.rendered = () ->
+	console.log "participants rendered"
+	self = this
+	Meteor.autorun () ->
+		data = Participants.find({eventId : Session.get "eventId"}).fetch()
+		nItems = data.length
+		console.log "Number of items: #{nItems}"
+
+		node = $(self.find("svg"))
+		width = node.width()
+		height = node.height()
+		radius = Math.min(width, height) * 0.4
+		angleIncrease = 2 * Math.PI / nItems
+		console.log "Radius: #{radius}"
+		console.log "Angle increase: #{angleIncrease}"
+		console.log "svg size: width: #{width}, height: #{height}"
+
+		# The selection to work on
+		participants = d3
+			.select("svg")
+			.select("g")
+				.attr("transform", "translate(#{width / 2}, #{height / 2})")
+			.selectAll("circle")
+			.data(data, (d) -> d._id)
+
+		# Create an element
+		participants.enter()
+			.append("circle")
+			.attr("r", 0.05 * width)
+			.attr("class", "participant")
+			.attr("opacity", 0)
+
+		# Update an element
+		participants
+			.transition()
+				.duration(250)
+				.attr("opacity", 1.0)
+			.transition()
+				.duration(250)
+				.attr "cx", (d, i) ->
+					val = radius * Math.cos(angleIncrease * i)
+					console.log "x: #{val}"
+					val
+				.attr "cy", (d, i) ->
+					val = radius * Math.sin(angleIncrease * i)
+					console.log "y: #{val}"
+					val
 
 Template.participant.events =
 	# Remove participant
