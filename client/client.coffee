@@ -42,7 +42,7 @@ Template.participants.rendered = () ->
 		nItems = data.length
 		console.log "Number of items: #{nItems}"
 
-		node = $(self.find("svg"))
+		node = $("svg")
 		width = node.width()
 		height = node.height()
 		radius = Math.min(width, height) * 0.4
@@ -63,16 +63,25 @@ Template.participants.rendered = () ->
 		# Create an element
 		participants.enter()
 			.append("g")
+				.attr("class", "participant-group")
 				.each (d, i) ->
 					el = d3.select this
-					el.append("circle")
-						.attr("r", "40%")
-						.attr("class", "participant")
-					el.append("text")
-						.text((d) -> d.name)
-							.attr("font-family", "Verdana")
-							.attr("font-size", "11em")
-							.attr("fill", "blue")
+					self = this
+
+					# Group with elements
+					group = el.append("g")
+						.each () ->
+							el2 = d3.select this
+							el2.append("circle", ":first-child")
+								.attr("r", "40%")
+								.attr("class", "participant")
+							el2.append("text").text((d) -> d.name)
+
+					# Border rect
+					rect = el.append("rect")
+						.attr("width", "100%").attr("height", "100%")
+					bbox = rect.node().getBBox()
+					rect.attr("x", -bbox.width / 2).attr("y", -bbox.height / 2)
 
 		participants
 			.transition()
@@ -82,20 +91,20 @@ Template.participants.rendered = () ->
 					y = radius * Math.sin(angleIncrease * i)
 					"translate(#{x}, #{y}) scale(#{scaleFactor})"
 
-Template.participant.events =
-	# Remove participant
-	"click .remove-participant" : (event) -> 
-		console.log "removing participant #{this.name}."
-		removeParticipant this
+# Template.participant.events =
+# 	# Remove participant
+# 	"click .remove-participant" : (event) -> 
+# 		console.log "removing participant #{this.name}."
+# 		removeParticipant this
 
-	# Edit participant name
-	"dblclick span"	: (event) ->
-		editable = $(event.srcElement.parentNode)
-		editable.addClass "editing"
-		editable.find("input").focus()
+# 	# Edit participant name
+# 	"dblclick span"	: (event) ->
+# 		editable = $(event.srcElement.parentNode)
+# 		editable.addClass "editing"
+# 		editable.find("input").focus()
 
-	"blur .edit input" : (event) -> exitEditMode this, event
-	"keypress .edit input" : (event) -> exitEditMode this, event if event.keyCode == 13 # enter
+# 	"blur .edit input" : (event) -> exitEditMode this, event
+# 	"keypress .edit input" : (event) -> exitEditMode this, event if event.keyCode == 13 # enter
 
 dragSource = null
 Template.participants.events = 
