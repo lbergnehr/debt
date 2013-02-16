@@ -56,31 +56,31 @@ Template.participants.rendered = () ->
 			.select("svg")
 			.select("g")
 				.attr("transform", "translate(#{width / 2}, #{height / 2})")
-			.selectAll("circle")
+			.selectAll("g")
 			.data(data, (d) -> d._id)
 
+		scaleFactor = 0.1
 		# Create an element
 		participants.enter()
-			.append("circle")
-			.attr("r", 0.05 * width)
-			.attr("class", "participant")
-			.attr("opacity", 0)
+			.append("g")
+				.each (d, i) ->
+					el = d3.select this
+					el.append("circle")
+						.attr("r", "40%")
+						.attr("class", "participant")
+					el.append("text")
+						.text((d) -> d.name)
+							.attr("font-family", "Verdana")
+							.attr("font-size", "11em")
+							.attr("fill", "blue")
 
-		# Update an element
 		participants
 			.transition()
 				.duration(250)
-				.attr("opacity", 1.0)
-			.transition()
-				.duration(250)
-				.attr "cx", (d, i) ->
-					val = radius * Math.cos(angleIncrease * i)
-					console.log "x: #{val}"
-					val
-				.attr "cy", (d, i) ->
-					val = radius * Math.sin(angleIncrease * i)
-					console.log "y: #{val}"
-					val
+				.attr "transform", (d, i) ->
+					x = radius * Math.cos(angleIncrease * i)
+					y = radius * Math.sin(angleIncrease * i)
+					"translate(#{x}, #{y}) scale(#{scaleFactor})"
 
 Template.participant.events =
 	# Remove participant
