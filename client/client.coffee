@@ -37,19 +37,32 @@ Template.home.events =
 Template.participants.rendered = () ->
 	console.log "participants rendered"
 	self = this
+
+	# Drag behavior
+	dragSource = null
+	dragDestination = null
+	drag = d3.behavior.drag()
+		.on "dragstart",  (d, i) -> 
+			console.log "dragging from: #{d.name}"
+			dragSource = d
+		.on "dragend", (d, i) ->
+			console.log "stopped dragging from: #{d.name}"
+			if dragDestination
+				d3.select(".drag-over").classed("drag-over", false)
+				console.log "dragged from #{dragSource.name} to #{dragDestination.name}"
+			
+			dragSource = null
+			dragDestination = null
+
 	Meteor.autorun () ->
-		data = Participants.find({eventId : Session.get "eventId"}).fetch()
-		nItems = data.length
-		console.log "Number of items: #{nItems}"
+		participantData = Participants.find({eventId : Session.get "eventId"}).fetch()
+		nItems = participantData.length
 
 		node = $("svg")
 		width = node.width()
 		height = node.height()
 		radius = Math.min(width, height) * 0.4
 		angleIncrease = 2 * Math.PI / nItems
-		console.log "Radius: #{radius}"
-		console.log "Angle increase: #{angleIncrease}"
-		console.log "svg size: width: #{width}, height: #{height}"
 
 		# The selection to work on
 		participants = d3
@@ -57,7 +70,7 @@ Template.participants.rendered = () ->
 			.select("g")
 				.attr("transform", "translate(#{width / 2}, #{height / 2})")
 			.selectAll("g")
-			.data(data, (d) -> d._id)
+			.data(participantData, (d) -> d._id)
 
 		scaleFactor = 0.1
 		# Create an element
@@ -72,7 +85,7 @@ Template.participants.rendered = () ->
 					group = el.append("g")
 						.each () ->
 							el2 = d3.select this
-							el2.append("circle", ":first-child")
+							el2.append("circle")
 								.attr("r", "40%")
 								.attr("class", "participant")
 							el2.append("text").text((d) -> d.name)
@@ -82,6 +95,14 @@ Template.participants.rendered = () ->
 						.attr("width", "100%").attr("height", "100%")
 					bbox = rect.node().getBBox()
 					rect.attr("x", -bbox.width / 2).attr("y", -bbox.height / 2)
+			.call(drag)
+			.on "mouseover", (d, i) ->
+				if (dragSource != null && dragSource != d)
+					d3.select(this).classed("drag-over", true)
+					dragDestination = d
+			.on "mouseout", (d, i) ->
+				d3.select(this).classed("drag-over", false)
+				dragDestination = null
 
 		participants
 			.transition()

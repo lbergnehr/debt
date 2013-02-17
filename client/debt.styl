@@ -9,7 +9,7 @@ borderThickness = 2px
 	background-color frontColor
 
 #home  
-	@extend .front-panel
+	@extends .front-panel
 	margin-top 10em
 	margin-left auto
 	margin-right auto
@@ -19,9 +19,6 @@ borderThickness = 2px
 .participant-group
 	rect
 		stroke black
-		stroke-width 5em
-		stroke-
-		stroke-dasharray 5
 		fill-opacity 0
 	g
 		circle
@@ -30,6 +27,11 @@ borderThickness = 2px
 			fill blue
 			font-family Verdana
 			font-size 11em
+
+.drag-over
+	@extends .participant-group
+	rect
+		stroke red
 
 svg
 	margin 30px
