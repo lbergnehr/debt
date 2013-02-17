@@ -15,28 +15,22 @@ borderThickness = 2px
 	margin-right auto
 	padding 3em
 	max-width 20em 
-
+	
 .participant-group
-	rect
-		stroke black
-		fill-opacity 0
-	g
-		circle
-			fill orange
-		text
-			fill blue
-			font-family Verdana
-			font-size 11em
-
-.drag-over
-	@extends .participant-group
-	rect
-		stroke red
-
-svg
 	border 2px dashed lightblue
 	border-radius 10px
-	height 20em
+	position relative
+
+.participant
+	position absolute
+	min-width 50px
+	min-height 50px
+	background-color blue
+
+.drag-over
+	@extends .participant
+	rect
+		stroke red
 
 .participant-expenses
 	float right

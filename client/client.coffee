@@ -61,88 +61,40 @@ Template.participants.rendered = () ->
 	console.log "participants rendered"
 	self = this
 
-	# Drag behavior
-	dragSource = null
-	dragDestination = null
-	drag = d3.behavior.drag()
-		.on "dragstart",  (d, i) -> 
-			console.log "dragging from: #{d.name}"
-			dragSource = d
-		.on "dragend", (d, i) ->
-			console.log "stopped dragging from: #{d.name}"
-			if dragDestination
-				d3.select(".drag-over").classed("drag-over", false)
-				console.log "dragged from #{dragSource.name} to #{dragDestination.name}"
-				Debts.insert
-					eventId : Session.get "eventId"
-					financierId : dragSource._id
-					financierName : dragSource.name
-					borrowerId : dragDestination._id
-					borrowerName : dragDestination.name
-
-			dragSource = null
-			dragDestination = null
-
 	Meteor.autorun () ->
 		participantData = Participants.find({eventId : Session.get "eventId"}).fetch()
-		nItems = participantData.length
 
-		node = $("svg")
-		width = node.width()
-		height = node.height()
+		container = $(".participant-group")
+		width = container.width()
+		height = width
+		container.height(width)
 		radius = Math.min(width, height) * 0.4
+		nItems = participantData.length
 		angleIncrease = 2 * Math.PI / nItems
+
+		console.log "#{width}, #{height}"
 
 		# The selection to work on
 		participants = d3
-			.select("svg")
-			.select("g")
-				.attr("transform", "translate(#{width / 2}, #{height / 2})")
-			.selectAll("g")
+			.select(".participant-group")
+			.selectAll(".participant")
 			.data(participantData, (d) -> d._id)
 
-		scaleFactor = 0.1
 		# Create an element
-		participants.enter()
-			.append("g")
-				.attr("class", "participant-group")
-				.each (d, i) ->
-					el = d3.select this
-					self = this
-
-					# Group with elements
-					group = el.append("g")
-						.each () ->
-							el2 = d3.select this
-							# el2.append("circle")
-							# 	.attr("r", "40%")
-							# 	.classed("participant")
-							el2.append("image")
-								.attr("xlink:href", "http://www.gravatar.com/avatar/#{d.hash}")
-								.attr("width", "100%").attr("height", "100%")
-							el2.append("text").text((d) -> d.name)
-
-					# Border rect
-					rect = el.append("rect")
-						.attr("width", "100%").attr("height", "100%")
-					bbox = rect.node().getBBox()
-					rect.attr("x", -bbox.width / 2).attr("y", -bbox.height / 2)
-			.call(drag)
-			.on "mouseover", (d, i) ->
-				if (dragSource != null && dragSource != d)
-					d3.select(this).classed("drag-over", true)
-					dragDestination = d
-			.on "mouseout", (d, i) ->
-				d3.select(this).classed("drag-over", false)
-				dragDestination = null
+		participants.enter().append("div")
+			.classed("participant", true)
+			.each (d, i) ->
+				el = d3.select this
+				el.html Template.participant({name : d.name})
 
 		participants
 			.transition()
 				.duration(250)
-				.attr "transform", (d, i) ->
-					x = radius * Math.cos(angleIncrease * i)
-					y = radius * Math.sin(angleIncrease * i)
-					"translate(#{x}, #{y}) scale(#{scaleFactor})"
+				.attr "style", (d, i) ->
+					el = $(this)
+					x = radius * Math.cos(angleIncrease * i) + width / 2 - el.width() / 2
+					y = radius * Math.sin(angleIncrease * i) + height / 2 - el.height() / 2
+					"left:#{x}px; top:#{y}px"
 
 dragSource = null
 Template.participants.events = 
