@@ -78,7 +78,7 @@ Template.participants.rendered = () ->
 		participants = d3
 			.select(".participant-group")
 			.selectAll(".participant")
-			.data(participantData, (d) -> d._id)
+			.data participantData, (d) -> d._id if d?
 
 		# Create an element
 		participants.enter().append("div")
