@@ -14,8 +14,31 @@ Router = Backbone.Router.extend
 @app = new Router
 Backbone.history.start {pushState: true}
 
+# Event template
 Template.event.event = () -> 
 	Events.findOne {_id : Session.get "eventId"}, {name : 1}
+
+Template.event.debts = () ->
+	Debts.find {eventId : Session.get "eventId"}
+
+saveDebt = (id, name, amount) ->
+	Debts.update({_id : id, $set : {name : name, amount : amount}})
+
+Template.event.events =
+	# # Remove debt
+	# "click .remove-participant" : (event) -> 
+	# 	console.log "removing participant #{this.name}."
+	# 	removeParticipant this
+
+	# Edit participant name
+	"dblclick span.hide-on-edit" : (event) ->
+		editable = $(event.srcElement.parentNode)
+		editable.addClass "editing"
+		editable.find("input").focus()
+
+	"blur .edit input" : (event) -> saveDebt this._id, this.name, this.amount
+
+	"keypress .edit input" : (event) -> saveDebt this, this.name, this.amount if event.keyCode == 13 # enter
 
 Template.main.isHome = () ->
 	eventId = Session.get "eventId";
@@ -50,7 +73,13 @@ Template.participants.rendered = () ->
 			if dragDestination
 				d3.select(".drag-over").classed("drag-over", false)
 				console.log "dragged from #{dragSource.name} to #{dragDestination.name}"
-			
+				Debts.insert
+					eventId : Session.get "eventId"
+					financierId : dragSource._id
+					financierName : dragSource.name
+					borrowerId : dragDestination._id
+					borrowerName : dragDestination.name
+
 			dragSource = null
 			dragDestination = null
 
@@ -85,9 +114,12 @@ Template.participants.rendered = () ->
 					group = el.append("g")
 						.each () ->
 							el2 = d3.select this
-							el2.append("circle")
-								.attr("r", "40%")
-								.attr("class", "participant")
+							# el2.append("circle")
+							# 	.attr("r", "40%")
+							# 	.classed("participant")
+							el2.append("image")
+								.attr("xlink:href", "http://www.gravatar.com/avatar/#{d.hash}")
+								.attr("width", "100%").attr("height", "100%")
 							el2.append("text").text((d) -> d.name)
 
 					# Border rect
@@ -112,29 +144,16 @@ Template.participants.rendered = () ->
 					y = radius * Math.sin(angleIncrease * i)
 					"translate(#{x}, #{y}) scale(#{scaleFactor})"
 
-# Template.participant.events =
-# 	# Remove participant
-# 	"click .remove-participant" : (event) -> 
-# 		console.log "removing participant #{this.name}."
-# 		removeParticipant this
-
-# 	# Edit participant name
-# 	"dblclick span"	: (event) ->
-# 		editable = $(event.srcElement.parentNode)
-# 		editable.addClass "editing"
-# 		editable.find("input").focus()
-
-# 	"blur .edit input" : (event) -> exitEditMode this, event
-# 	"keypress .edit input" : (event) -> exitEditMode this, event if event.keyCode == 13 # enter
-
 dragSource = null
 Template.participants.events = 
 	# New participant
 	"click button" : (event) -> 
-		textBox = $("#participant-name")[0]
-		addParticipant textBox.value
-		textBox.value = null
-		false
+		event.preventDefault()
+		nameTextBox = $("#participant-name")[0]
+		emailTextBox = $("#participant-email")[0]
+		addParticipant nameTextBox.value, emailTextBox.value
+		nameTextBox.value = null
+		emailTextBox.value = null
 
 	# Drag and drop between participants
 	"dragstart .participant": (event) -> dragSource = this
@@ -159,53 +178,18 @@ exitEditMode = (context, event) ->
 renderParticipants = () ->
 	console.log "rendering participants"
 
-addDebt = (financier, borrower, element) ->
-	context = 
-		financier	: financier.name
-		borrower	: borrower.name
+addParticipant = (name, email) ->
+	console.log "adding participant"
+	Meteor.call "addParticipant", {eventId : Session.get("eventId"), name : name, email : email}, (ret) ->
+		console.log "adding done: #{ret}"
 
-	html = Template.amountPopover context
 
-	target = $(element)
-	target.popover 
-		trigger	: "manual"
-		html	: true
-		title	: "Amount"
-		content	: html
 
-	target.popover "show"
 
-	el = $(".popover")
 
-	amountInput = el.find(".borrowed-amount")[0]
-	amountInput.focus()
 
-	doc = $(document)
-	doc.on "mouseup", (e) ->
-		console.log "document mouseup"
-		if el.has(e.target).length == 0
-			target.popover "destroy"
-			exit()
 
-	el.find("input.btn").on "click", (e) ->
-		e.preventDefault()
-		expense = el.find(".expense")[0].value
-		target.popover "destroy"
 
-		financier.borrowings = [] if !financier.borrowings
-		financier.borrowings.push
-			borrowerId : borrower._id
-			borrowerName : borrower.name
-			amount : parseFloat(amountInput.value) || 0
-			expense : expense
-		financier.totalExpenses = financier.borrowings.map((b) -> parseFloat(b.amount) || 0).reduce((x, y) -> x + y)
-		
-		Participants.update {_id : financier._id}, {$set : {borrowings : financier.borrowings, totalExpenses : financier.totalExpenses }}
 
-		exit()
 
-	exit = () -> doc.unbind()
-
-addParticipant = (name) ->
-	Participants.insert name: name, eventId: Session.get "eventId"
 

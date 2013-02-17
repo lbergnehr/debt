@@ -34,16 +34,17 @@ borderThickness = 2px
 		stroke red
 
 svg
-	margin 30px
 	border 2px dashed lightblue
 	border-radius 10px
+	height 20em
 
 .participant-expenses
 	float right
 
-.drag-over 
-	background-color darken(frontColor, 30%)
-	border borderThickness dashed dragBorderColor
+.debt
+	@extends .front-panel
+	min-height 2em
+	width 100%
 
 .edit
 	display none 
