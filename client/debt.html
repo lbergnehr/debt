@@ -37,9 +37,11 @@
 	{{#if event}}
 	<h1>{{event.name}}</h1>
 	{{> participants}}
-	{{#each debts}}
-	{{> debt}}
-	{{/each}}
+	<div id="debts">
+		{{#each debts}}
+		{{> debt}}
+		{{/each}}
+	</div>
 	{{/if}}
 
 	{{#unless event}}
@@ -62,27 +64,30 @@
 </template>
 
 <template name="participant">
-	<div class="participant">
-		{{name}}
+	<div class="participant-inner" draggable="true">
+		<img src="http://www.gravatar.com/avatar/{{participant.hash}}" alt="{{participant.name}}" class="img-circle">
+
+		<p>{{participant.name}}</p>
 	</div>
 </template>
 
 <template name="debt">
-	<div class="well well-small">
-		<form class="form-inline">
-			<input type="text" class="input-small" placeholder="Name" />
-			<input type="number" class="input-small" placeholder="Amount" />
-		</form>
+	<div class="row-fluid">
+		<div class="debt-avatars span3">
+			<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" alt="{{financier.email}}" class="img-circle" />
+
+			<i class="icon-arrow-right"></i>
+
+			<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" alt="{{borrower.email}}" class="img-circle" />
+		</div>
+
+		<div class="span9">
+			<form>
+				<input type="text" placeholder="Event" />
+				<input type="number" placeholder="Amount" />
+			</form>
+		</div>
 	</div>
 </template>
-
-
-
-
-
-
-
-
-
 
 

@@ -14,15 +14,17 @@ Router = Backbone.Router.extend
 @app = new Router
 Backbone.history.start {pushState: true}
 
+# Window resize event
+Session.set "windowHeight", $(window).height()
+$(window).resize () ->
+	Session.set "windowHeight", $(window).height()
+
 # Event template
 Template.event.event = () -> 
 	Events.findOne {_id : Session.get "eventId"}, {name : 1}
 
 Template.event.debts = () ->
-	Debts.find {eventId : Session.get "eventId"}
-
-saveDebt = (id, name, amount) ->
-	Debts.update({_id : id, $set : {name : name, amount : amount}})
+	debts = Debts.find {eventId : Session.get "eventId"}
 
 Template.event.events =
 	# # Remove debt
@@ -66,9 +68,9 @@ Template.participants.rendered = () ->
 
 		container = $(".participant-group")
 		width = container.width()
-		height = width
-		container.height(width)
-		radius = Math.min(width, height) * 0.4
+		height = Session.get("windowHeight") * 0.8
+		container.height(height)
+		radius = Math.min(width, height) * 0.35
 		nItems = participantData.length
 		angleIncrease = 2 * Math.PI / nItems
 
@@ -81,11 +83,10 @@ Template.participants.rendered = () ->
 			.data participantData, (d) -> d._id if d?
 
 		# Create an element
-		participants.enter().append("div")
-			.classed("participant", true)
-			.each (d, i) ->
-				el = d3.select this
-				el.html Template.participant({name : d.name})
+		participants.enter()
+			.append("div")
+				.classed("participant", true)
+				.html (d, i) -> Template.participant({participant : d})
 
 		participants
 			.transition()
@@ -97,7 +98,7 @@ Template.participants.rendered = () ->
 					"left:#{x}px; top:#{y}px"
 
 dragSource = null
-Template.participants.events = 
+Template.participants.events
 	# New participant
 	"click button" : (event) -> 
 		event.preventDefault()
@@ -108,18 +109,39 @@ Template.participants.events =
 		emailTextBox.value = null
 
 	# Drag and drop between participants
-	"dragstart .participant": (event) -> dragSource = this
-	"dragover .participant"	: (event) ->
-		event.srcElement.classList.add "drag-over" unless this == dragSource
+	"dragstart .participant" : (event) -> 
+		borrower = d3.select(event.currentTarget).datum()
+		dragSource = borrower
+	"dragover .participant" : (event) ->
 		event.preventDefault()
+		event.stopPropagation()
+		borrower = d3.select(event.currentTarget).datum()
+		event.srcElement.classList.add "drag-over" unless borrower == dragSource
 		false
-	"dragleave .participant": (event) ->
-		event.srcElement.classList.remove "drag-over" unless this == dragSource 
-	"drop .participant"		: (event) -> 
-		unless this == dragSource
-			console.log event
+	"dragleave .participant" : (event) ->
+		event.preventDefault()
+		event.stopPropagation()
+		borrower = d3.select(event.currentTarget).datum()
+		event.srcElement.classList.remove "drag-over" unless borrower == dragSource 
+		false
+	"drop .participant"	: (event) -> 
+		event.preventDefault()
+		event.stopPropagation()
+		borrower = d3.select(event.currentTarget).datum()
+		unless borrower == dragSource
 			event.srcElement.classList.remove "drag-over"
-			addDebt dragSource, this, event.target
+			try
+				console.log "insert new debt"
+				Debts.insert
+					eventId : Session.get "eventId"
+					financierId : dragSource._id
+					financierName : dragSource.name
+					financierAvatarHash : dragSource.hash
+					borrowerId : borrower._id
+					borrowerName : borrower.name
+					borrowerAvatarHash : borrower.hash
+			finally
+				dragSource = null
 
 removeParticipant = (participant) -> Participants.remove participant
 
@@ -135,13 +157,6 @@ addParticipant = (name, email) ->
 	Meteor.call "addParticipant", {eventId : Session.get("eventId"), name : name, email : email}, (ret) ->
 		console.log "adding done: #{ret}"
 
-
-
-
-
-
-
-
-
-
+saveDebt = (id, name, amount) ->
+	Debts.update({_id : id, $set : {name : name, amount : amount}})
 
