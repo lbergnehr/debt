@@ -35,7 +35,12 @@
 
 <template name="event">
 	{{#if event}}
-	<h1>{{event.name}}</h1>
+	<div class="editable">
+		<h1 class="hide-on-edit">{{event.name}}</h1>
+		<div class="edit">
+			<input type="text">
+		</div>
+	</div>
 	{{> participants}}
 	<div id="debts">
 		{{#each debts}}
@@ -72,20 +77,22 @@
 </template>
 
 <template name="debt">
-	<div class="row-fluid">
-		<div class="debt-avatars span3">
-			<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" alt="{{financier.email}}" class="img-circle" />
+	<div class="well well-small">
+		<div class="row-fluid">
+			<div class="debt-avatars span3">
+				<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" alt="{{financier.email}}" class="img-circle" />
 
-			<i class="icon-arrow-right"></i>
+				<i class="icon-arrow-right"></i>
 
-			<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" alt="{{borrower.email}}" class="img-circle" />
-		</div>
+				<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" alt="{{borrower.email}}" class="img-circle" />
+			</div>
 
-		<div class="span9">
-			<form>
-				<input type="text" placeholder="Event" />
-				<input type="number" placeholder="Amount" />
-			</form>
+			<div class="span9">
+				<form class="form-inline">
+					<input type="text" placeholder="Event" />
+					<input type="number" class="input-small" placeholder="Amount" />
+				</form>
+			</div>
 		</div>
 	</div>
 </template>

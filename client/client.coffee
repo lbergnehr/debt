@@ -26,21 +26,21 @@ Template.event.event = () ->
 Template.event.debts = () ->
 	debts = Debts.find {eventId : Session.get "eventId"}
 
+updateEvent = (name) -> Events.update {_id : Session.get("eventId")}, {$set : {name : name}}
 Template.event.events =
-	# # Remove debt
-	# "click .remove-participant" : (event) -> 
-	# 	console.log "removing participant #{this.name}."
-	# 	removeParticipant this
-
-	# Edit participant name
-	"dblclick span.hide-on-edit" : (event) ->
+	# Change event name
+	"dblclick .hide-on-edit" : (event) ->
 		editable = $(event.srcElement.parentNode)
 		editable.addClass "editing"
-		editable.find("input").focus()
-
-	"blur .edit input" : (event) -> saveDebt this._id, this.name, this.amount
-
-	"keypress .edit input" : (event) -> saveDebt this, this.name, this.amount if event.keyCode == 13 # enter
+		input = editable.find("input")
+		input[0].value = event.srcElement.innerText
+		input.focus()
+	"blur .edit input" : (event) ->
+		$(event.srcElement.parentNode).removeClass "editing"
+		updateEvent(event.srcElement.value)
+	"keypress .edit input" : (event) -> 
+		$(event.srcElement.parentNode).removeClass "editing"
+		updateEvent(event.srcElement.value) if event.keyCode == 13 # enter
 
 Template.main.isHome = () ->
 	eventId = Session.get "eventId";
