@@ -50,7 +50,7 @@
 	{{/if}}
 
 	{{#unless event}}
-	<h1>That is not the address you are looking for...</h1>
+	<h1>That is not the event you are looking for...</h1>
 	{{/unless}}
 </template>
 
@@ -59,12 +59,12 @@
 		<form class="form-inline">
 			<input type="text" id="participant-name" placeholder="Name" />
 			<input type="email" id="participant-email" placeholder="Email" />
-			<button type="submit" class="btn">Add participant</button>
+			<button type="submit" id="add-participant-btn" class="btn">Add participant</button>
 		</form>
 
+		{{> addDebtDialog}}
 		{{#constant}}
 		<div class="participant-group">
-			<svg class="participant-canvas"></svg>
 		</div>
 		{{/constant}}
 	</div>
@@ -78,21 +78,40 @@
 	</div>
 </template>
 
+<template name="addDebtDialog">
+	{{#if showAddDebtDialog}}
+	<div id="add-debt-container">
+		<form class="form">
+			<legend>
+				<label>Add debt</label>
+			</legend>
+			<input type="text" name="name" placeholder="Name of expense" />
+			<input type="number" name="amount" class="input-small" placeholder="Amount" />
+
+			<div class="form-actions">
+				<button type="button" class="btn">Cancel</button>
+				<button type="submit" class="btn btn-success">Save debt</button>
+			</div>
+		</form>
+	</div>
+	{{/if}}
+</template>
+
 <template name="debt">
 	<div class="well well-small">
 		<div class="row-fluid">
 			<div class="debt-avatars span3">
-				<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" alt="{{financier.email}}" class="img-circle" />
+				<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" class="img-circle" />
 
 				<i class="icon-arrow-right"></i>
 
-				<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" alt="{{borrower.email}}" class="img-circle" />
+				<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" class="img-circle" />
 			</div>
 
 			<div class="span9">
 				<form class="form-inline">
-					<input type="text" placeholder="Event" />
-					<input type="number" class="input-small" placeholder="Amount" />
+					<input type="text" placeholder="Expense description" value="{{name}}" />
+					<input type="number" class="input-small" placeholder="Amount" value="{{amount}}" />
 				</form>
 			</div>
 		</div>

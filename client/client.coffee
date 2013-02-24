@@ -59,6 +59,41 @@ Template.home.events =
 			@app.navigate newId, true
 		false
 
+Template.addDebtDialog.showAddDebtDialog = () ->
+	(Session.get "addDebtContext")?
+
+Template.addDebtDialog.addDebtContext = () ->
+	Session.get "addDebtContext"
+
+Template.addDebtDialog.events
+	"click #add-debt-container .btn-success" : (event) ->
+		event.preventDefault()
+
+		context = Session.get "addDebtContext"
+		return unless context?
+
+		dialog = $("#add-debt-container")
+		name = dialog.find("input[name='name']")[0].value
+		amount = dialog.find("input[name='amount']")[0].value
+
+		try
+			context.borrowers.forEach (borrower) ->
+				Debts.insert
+					eventId : Session.get "eventId"
+					name : name
+					amount : amount
+					financierId : context.financier._id
+					financierName : context.financier.name
+					financierAvatarHash : context.financier.hash
+					borrowerId : borrower._id
+					borrowerName : borrower.name
+					borrowerAvatarHash : borrower.hash
+		finally
+			Session.set "addDebtContext", null
+	"click #add-debt-container .btn" : (event) ->
+		event.preventDefault()
+		Session.set "addDebtContext", null
+
 Template.participants.rendered = () ->
 	console.log "participants rendered"
 
@@ -69,7 +104,9 @@ Template.participants.rendered = () ->
 		width = container.width()
 		height = Session.get("windowHeight") * 0.8
 		container.height(height)
-		radius = Math.min(width, height) * 0.35
+		radiusModifier = 1
+		radiusModifier = 10 if Session.get("addDebtContext")?
+		radius = Math.min(width, height) * 0.35 * radiusModifier
 		nItems = participantData.length
 		angleIncrease = 2 * Math.PI / nItems
 
@@ -100,7 +137,7 @@ dragSource = null
 dragDestinations = []
 Template.participants.events
 	# New participant
-	"click button" : (event) -> 
+	"click #add-participant-btn" : (event) -> 
 		event.preventDefault()
 		nameTextBox = $("#participant-name")[0]
 		emailTextBox = $("#participant-email")[0]
@@ -112,7 +149,6 @@ Template.participants.events
 	"dragstart .participant" : (event) ->
 		event.preventDefault()
 	"mousedown .participant" : (event) -> 
-		console.log "mouse down participant"
 		return if event.which != 1 # Left mouse button
 
 		# Reset some stuff
@@ -123,22 +159,14 @@ Template.participants.events
 		dragSource = borrower
 	"mouseup" : (event) -> 
 		return if event.which != 1 # Left mouse button
-		console.log "mouse up"
 		$(".drag-over").removeClass("drag-over")
 
-		try
-			dragDestinations.forEach (borrower) ->
-				Debts.insert
-					eventId : Session.get "eventId"
-					financierId : dragSource._id
-					financierName : dragSource.name
-					financierAvatarHash : dragSource.hash
-					borrowerId : borrower._id
-					borrowerName : borrower.name
-					borrowerAvatarHash : borrower.hash
-		finally
-			dragSource = null
-			dragDestinations = []
+		if dragSource? && dragDestinations.length > 0
+			Session.set "addDebtContext", 
+				financier : dragSource
+				borrowers : dragDestinations
+		dragSource = null
+		dragDestinations = []
 	"mouseenter .participant" : (event) ->
 		return unless dragSource?
 		event.preventDefault()

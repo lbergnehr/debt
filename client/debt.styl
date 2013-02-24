@@ -5,6 +5,10 @@ dragBorderColor = purple
 
 borderThickness = 2px
 
+horizontal-center
+	margin-left auto
+	margin-right auto
+
 .front-panel 
 	background-color frontColor
 
@@ -15,9 +19,13 @@ borderThickness = 2px
 	margin-right auto
 	padding 3em
 	max-width 20em 
+
+.participants
+	position relative
 	
 .participant-group
-	border 2px dashed lightblue
+	// border 2px dashed lightblue
+	margin-top 10px
 	border-radius 10px
 	position relative
 
@@ -27,19 +35,35 @@ participantBorderSize = 2px
 	width 120px
 	height 120px
 	color darkgray
+	border participantBorderSize dashed transparent
+	border-radius 50%
 	div
-		border participantBorderSize dashed transparent
+		position absolute
+		top 10px
 		text-align center
 		width 100%
 		height 100%
-	img
-		width 80px
-		height 80px
-		border 1px solid darkgray
+		img
+			width 80px
+			height 80px
+			border 1px solid darkgray
 
 .drag-over
-	border participantBorderSize dashed black
+	border participantBorderSize dotted lightblue
 	border-radius 50%
+
+#add-debt-container
+	z-index 100
+	width 100%
+	height 100%
+	position absolute
+	form
+		border 2px solid lightblue
+		border-radius 10px
+		margin-left auto
+		margin-right auto
+		width 300px
+		padding 15px
 
 #debts
 	margin-top 10px
