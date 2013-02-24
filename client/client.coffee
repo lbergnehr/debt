@@ -95,8 +95,6 @@ Template.addDebtDialog.events
 		Session.set "addDebtContext", null
 
 Template.participants.rendered = () ->
-	console.log "participants rendered"
-
 	Meteor.autorun () ->
 		participantData = Participants.find({eventId : Session.get "eventId"}).fetch()
 
@@ -109,8 +107,7 @@ Template.participants.rendered = () ->
 		radius = Math.min(width, height) * 0.35 * radiusModifier
 		nItems = participantData.length
 		angleIncrease = 2 * Math.PI / nItems
-
-		console.log "#{width}, #{height}"
+		imageSize = 82
 
 		# The selection to work on
 		participants = d3
@@ -122,7 +119,7 @@ Template.participants.rendered = () ->
 		participants.enter()
 			.append("div")
 				.classed("participant", true)
-				.html (d, i) -> Template.participant({participant : d})
+				.html (d, i) -> Template.participant({participant : d, imageSize : imageSize})
 
 		participants
 			.transition()
@@ -186,11 +183,7 @@ exitEditMode = (context, event) ->
 	Participants.update {_id: context._id}, {$set: {name: event.srcElement.value}}
 	$(event.srcElement.parentNode.parentNode).removeClass "editing"
 
-renderParticipants = () ->
-	console.log "rendering participants"
-
 addParticipant = (name, email) ->
-	console.log "adding participant"
 	Meteor.call "addParticipant", {eventId : Session.get("eventId"), name : name, email : email}, (ret) ->
 		console.log "adding done: #{ret}"
 
