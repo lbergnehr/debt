@@ -98,6 +98,7 @@ Template.participants.rendered = () ->
 					"left:#{x}px; top:#{y}px"
 
 dragSource = null
+dragDestinations = []
 Template.participants.events
 	# New participant
 	"click button" : (event) -> 
@@ -109,29 +110,25 @@ Template.participants.events
 		emailTextBox.value = null
 
 	# Drag and drop between participants
-	"dragstart .participant" : (event) -> 
+	"dragstart .participant" : (event) ->
+		event.preventDefault()
+	"mousedown .participant" : (event) -> 
+		console.log "mouse down participant"
+		return if event.which != 1 # Left mouse button
+
+		# Reset some stuff
+		$(".drag-over").removeClass("drag-over")
+		dragDestinations = []
+
 		borrower = d3.select(event.currentTarget).datum()
 		dragSource = borrower
-	"dragover .participant" : (event) ->
-		event.preventDefault()
-		event.stopPropagation()
-		borrower = d3.select(event.currentTarget).datum()
-		event.srcElement.classList.add "drag-over" unless borrower == dragSource
-		false
-	"dragleave .participant" : (event) ->
-		event.preventDefault()
-		event.stopPropagation()
-		borrower = d3.select(event.currentTarget).datum()
-		event.srcElement.classList.remove "drag-over" unless borrower == dragSource 
-		false
-	"drop .participant"	: (event) -> 
-		event.preventDefault()
-		event.stopPropagation()
-		borrower = d3.select(event.currentTarget).datum()
-		unless borrower == dragSource
-			event.srcElement.classList.remove "drag-over"
-			try
-				console.log "insert new debt"
+	"mouseup" : (event) -> 
+		return if event.which != 1 # Left mouse button
+		console.log "mouse up"
+		$(".drag-over").removeClass("drag-over")
+
+		try
+			dragDestinations.forEach (borrower) ->
 				Debts.insert
 					eventId : Session.get "eventId"
 					financierId : dragSource._id
@@ -140,8 +137,21 @@ Template.participants.events
 					borrowerId : borrower._id
 					borrowerName : borrower.name
 					borrowerAvatarHash : borrower.hash
-			finally
-				dragSource = null
+		finally
+			dragSource = null
+			dragDestinations = []
+	"mouseenter .participant" : (event) ->
+		return unless dragSource?
+		event.preventDefault()
+		event.stopPropagation()
+		borrower = d3.select(event.currentTarget).datum()
+		return if borrower == dragSource
+
+		$(event.srcElement).toggleClass("drag-over")
+		if borrower in dragDestinations
+			dragDestinations.pop(borrower)
+		else
+			dragDestinations.push(borrower)
 
 removeParticipant = (participant) -> Participants.remove participant
 

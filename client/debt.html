@@ -63,13 +63,15 @@
 		</form>
 
 		{{#constant}}
-		<div class="participant-group"></div>
+		<div class="participant-group">
+			<svg class="participant-canvas"></svg>
+		</div>
 		{{/constant}}
 	</div>
 </template>
 
 <template name="participant">
-	<div class="participant-inner" draggable="true">
+	<div class="participant-inner">
 		<img src="http://www.gravatar.com/avatar/{{participant.hash}}" alt="{{participant.name}}" class="img-circle">
 
 		<p>{{participant.name}}</p>
