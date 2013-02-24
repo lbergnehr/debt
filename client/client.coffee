@@ -61,7 +61,6 @@ Template.home.events =
 
 Template.participants.rendered = () ->
 	console.log "participants rendered"
-	self = this
 
 	Meteor.autorun () ->
 		participantData = Participants.find({eventId : Session.get "eventId"}).fetch()
@@ -149,7 +148,7 @@ Template.participants.events
 
 		$(event.srcElement).toggleClass("drag-over")
 		if borrower in dragDestinations
-			dragDestinations.pop(borrower)
+			dragDestinations.remove(borrower)
 		else
 			dragDestinations.push(borrower)
 
