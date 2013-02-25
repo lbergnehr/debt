@@ -66,6 +66,17 @@ participantBorderSize = 2px
 #debts
 	margin-top 10px
 
+.debt
+	position relative
+	.remove-button
+		position absolute
+		right 5px
+		top 5px
+		visibility hidden
+	&:hover
+		.remove-button
+			visibility visible
+
 .debt-avatars
 	img
 		width 32px

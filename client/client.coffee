@@ -98,6 +98,12 @@ Template.addDebtDialog.events
 		event.preventDefault()
 		Session.set "addDebtContext", null
 
+Template.debt.events
+	"click .remove-button" : (event) ->
+		Debts.remove {_id : this._id}
+	"blur input" : (event) ->
+		console.log "input changed"
+
 Template.participants.rendered = () ->
 	Meteor.autorun () ->
 		participantData = Participants.find({eventId : Session.get "eventId"}).fetch()
