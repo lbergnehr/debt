@@ -59,6 +59,10 @@ Template.home.events =
 			@app.navigate newId, true
 		false
 
+Template.addDebtDialog.rendered = () ->
+	el = this.find "input[name='name']"
+	$(el).focus()
+
 Template.addDebtDialog.showAddDebtDialog = () ->
 	(Session.get "addDebtContext")?
 
