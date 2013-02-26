@@ -35,7 +35,7 @@ Template.event.events =
 		input = editable.find("textarea")
 		input.focus()
 		input.select()
-	"blur, keypress .edit textarea" : (event) ->
+	"blur .edit textarea, keypress .edit textarea" : (event) ->
 		return unless (event.keyCode != "undefined" and event.keyCode == 13) or event.type == "blur" # return
 
 		$(".editing").removeClass "editing"
