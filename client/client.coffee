@@ -32,15 +32,15 @@ Template.event.events =
 	"dblclick .hide-on-edit" : (event) ->
 		editable = $(event.srcElement.parentNode)
 		editable.addClass "editing"
-		input = editable.find("input")
-		input[0].value = event.srcElement.innerText
+		input = editable.find("textarea")
 		input.focus()
-	"blur .edit input" : (event) ->
-		$(event.srcElement.parentNode).removeClass "editing"
-		updateEvent(event.srcElement.value)
-	"keypress .edit input" : (event) -> 
-		$(event.srcElement.parentNode).removeClass "editing"
-		updateEvent(event.srcElement.value) if event.keyCode == 13 # enter
+		input.select()
+	"blur, keypress .edit textarea" : (event) ->
+		return unless (event.keyCode != "undefined" and event.keyCode == 13) or event.type == "blur" # return
+
+		$(".editing").removeClass "editing"
+		name = $(event.target)[0].value
+		updateEvent name
 
 Template.main.isHome = () ->
 	eventId = Session.get "eventId";

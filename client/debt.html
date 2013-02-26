@@ -36,9 +36,9 @@
 <template name="event">
 	{{#if event}}
 	<div class="editable">
-		<h1 class="hide-on-edit">{{event.name}}</h1>
+		<h2 class="hide-on-edit">{{event.name}}</h2>
 		<div class="edit">
-			<input type="text">
+			<textarea>{{event.name}}</textarea> 
 		</div>
 	</div>
 	{{> participants}}
