@@ -35,12 +35,7 @@
 
 <template name="event">
 	{{#if event}}
-	<div class="editable">
-		<h2 class="hide-on-edit">{{event.name}}</h2>
-		<div class="edit">
-			<textarea>{{event.name}}</textarea> 
-		</div>
-	</div>
+	<textarea spellcheck="false" name="event-name" cols="30" class="h3 editable">{{event.name}}</textarea>
 	{{> participants}}
 	<div id="debts">
 		{{#each debts}}
@@ -57,10 +52,13 @@
 <template name="participants">
 	<div class="participants">
 		<form class="form-inline">
-			<input type="text" id="participant-name" placeholder="Name" />
-			<input type="email" id="participant-email" placeholder="Email" />
+			<input type="text" id="participant-name" placeholder="Name of new participant" />
+			<input type="email" id="participant-email" placeholder="Email of new participant" />
 			<button type="submit" id="add-participant-btn" class="btn">Add participant</button>
 		</form>
+		<div class="information">
+			<span>Drag from the person lending money over one or more loaners.</span>
+		</div>
 
 		{{> addDebtDialog}}
 		{{#constant}}
@@ -78,6 +76,7 @@
 			<p>{{participant.name}}</p>
 		</div>
 		<div class="participant-debts">
+			<h6>Debts</h6>
 			<ul>
 				{{#each participantDebts}}
 				<li><span>{{financierName}}:&nbsp;{{amount}}</span></li>
@@ -110,15 +109,21 @@
 	<div class="debt well well-small">
 		<i class="icon-remove remove-button"></i>
 		<div class="row-fluid">
-			<div class="debt-avatars span3">
-				<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" class="img-circle" />
+			<div class="debt-avatars span6 row-fluid">
+				<div class="span2">
+					<img src="http://www.gravatar.com/avatar/{{financierAvatarHash}}?s=32" class="img-circle" />
+					<span>{{financierName}}</span>
+				</div>
 
-				<i class="icon-arrow-right"></i>
+				<div class="span2"><i class="icon-arrow-right"></i></div>
 
-				<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" class="img-circle" />
+				<div class="span2">
+					<img src="http://www.gravatar.com/avatar/{{borrowerAvatarHash}}?s=32" class="img-circle" />
+					<span>{{borrowerName}}</span>
+				</div>
 			</div>
 
-			<div class="span9">
+			<div class="span6">
 				<form class="form-inline">
 					<input type="text" placeholder="Expense description" value="{{name}}" />
 					<input type="number" class="input-small" placeholder="Amount" value="{{amount}}" />

@@ -1,3 +1,4 @@
+
 debug-border(color = red)
 	border 1px solid color
 
@@ -44,11 +45,13 @@ participantBorderSize = 2px
 separatorPadding = 7px
 .participant-inner
 	padding-right separatorPadding
-	border-right 1px dashed lightgray
+	// border-right 1px dashed lightgray
 	float left
 	text-align center
 	img
 		border 1px solid darkgray
+		width 82px
+		height 82px
 
 .participant-debts
 	float right
@@ -56,6 +59,10 @@ separatorPadding = 7px
 	ul
 		margin-left separatorPadding
 		list-style-type none
+		padding 0px
+		li
+			margin 0px
+			padding 0px
 
 .drag-over
 	border participantBorderSize dashed lightblue
@@ -92,18 +99,41 @@ separatorPadding = 7px
 		width 32px
 		height 32px
 
-.edit
-	display none 
-	textarea
-		height 32px
-		font-size 2em
-
-.editing  
-	.edit
-		display block  
-	.hide-on-edit
-		display none !important 
+hidden-textarea()
+	default-textarea(0)
+default-textarea(opacity = 0.075)
+	if opacity > 0
+		border-color #cccccc
+	else
+		border-color transparent
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, opacity);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, opacity);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, opacity);
 
 textarea.editable
-	outline none
+	hidden-textarea()
+	overflow auto
+	resize none
+	&:hover
+		default-textarea()
+
+h6
+	text-transform uppercase
+	margin-bottom 0px
+
+.h3
+	margin-top 10px
+	font-family inherit
+	font-size 3em
+textarea.h3
+	width auto
+	padding 7px
+
+.information
+	offBlackText()
+	text-align center
+	font-size 16px
+
+
+
 

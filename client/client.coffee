@@ -26,21 +26,20 @@ Template.event.event = () ->
 Template.event.debts = () ->
 	debts = Debts.find {eventId : Session.get "eventId"}
 
-updateEvent = (name) -> Events.update {_id : Session.get("eventId")}, {$set : {name : name}}
+updateEvent = _.throttle((name) -> 
+	console.log "updating to #{name}"
+	Events.update {_id : Session.get("eventId")}, {$set : {name : name}}, 500)
 Template.event.events =
-	# Change event name
-	"dblclick .hide-on-edit" : (event) ->
-		editable = $(event.srcElement.parentNode)
-		editable.addClass "editing"
-		input = editable.find("textarea")
-		input.focus()
-		input.select()
-	"blur .edit textarea, keypress .edit textarea" : (event) ->
-		return unless (event.keyCode != "undefined" and event.keyCode == 13) or event.type == "blur" # return
+	"keydown textarea.editable" : (event) ->
+		if event.keyCode == 13
+			event.preventDefault()
+			event.stopPropagation()
+			return
 
-		$(".editing").removeClass "editing"
-		name = $(event.target)[0].value
-		updateEvent name
+	"keyup textarea.editable, onchange textarea.editable" : (event) ->
+		return if event.keyCode == 13
+		val = $(event.currentTarget).val()
+		updateEvent val
 
 Template.main.isHome = () ->
 	eventId = Session.get "eventId";
@@ -129,7 +128,7 @@ Template.participants.rendered = () ->
 		participants.enter()
 			.append("div")
 				.classed("participant", true)
-					
+
 		participants
 			.html (d, i) -> 
 				debts = Debts.find {borrowerId : d._id}
@@ -201,7 +200,4 @@ exitEditMode = (context, event) ->
 addParticipant = (name, email) ->
 	Meteor.call "addParticipant", {eventId : Session.get("eventId"), name : name, email : email}, (ret) ->
 		console.log "adding done: #{ret}"
-
-saveDebt = (id, name, amount) ->
-	Debts.update({_id : id, $set : {name : name, amount : amount}})
 

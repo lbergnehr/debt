@@ -24,3 +24,9 @@ Meteor.methods
 
 		console.log "inserted id: #{id}"
 		id
+
+	"saveDebt" : (args) ->
+		id = Debts.insert args
+
+		console.log "inserted id: #{id}"
+		id
