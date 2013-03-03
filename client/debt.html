@@ -71,10 +71,19 @@
 </template>
 
 <template name="participant">
-	<div class="participant-inner">
-		<img src="http://www.gravatar.com/avatar/{{participant.hash}}?s={{imageSize}}" alt="{{participant.name}}" class="img-circle">
+	<div>
+		<div class="participant-inner">
+			<img src="http://www.gravatar.com/avatar/{{participant.hash}}?s={{imageSize}}" alt="{{participant.name}}" class="img-circle">
 
-		<p>{{participant.name}}</p>
+			<p>{{participant.name}}</p>
+		</div>
+		<div class="participant-debts">
+			<ul>
+				{{#each participantDebts}}
+				<li><span>{{financierName}}:&nbsp;{{amount}}</span></li>
+				{{/each}}
+			</ul>
+		</div>
 	</div>
 </template>
 

@@ -129,9 +129,14 @@ Template.participants.rendered = () ->
 		participants.enter()
 			.append("div")
 				.classed("participant", true)
-				.html (d, i) -> Template.participant({participant : d, imageSize : imageSize})
-
+					
 		participants
+			.html (d, i) -> 
+				debts = Debts.find {borrowerId : d._id}
+				Template.participant 
+					participant : d
+					imageSize : imageSize
+					participantDebts : debts
 			.transition()
 				.duration(250)
 				.attr "style", (d, i) ->

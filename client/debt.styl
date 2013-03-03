@@ -1,9 +1,15 @@
+debug-border(color = red)
+	border 1px solid color
 
 frontColor = lightblue
 hoverColor = blue
 dragBorderColor = purple
+offBlackText = lighten(black, 20%)
 
 borderThickness = 2px
+
+*
+	font-family Georgia 
 
 horizontal-center
 	margin-left auto
@@ -32,23 +38,27 @@ horizontal-center
 participantBorderSize = 2px
 .participant
 	position absolute
-	width 120px
-	height 120px
 	color darkgray
 	border participantBorderSize dashed transparent
-	border-radius 50%
-	div
-		position absolute
-		top 10px
-		text-align center
-		width 100%
-		height 100%
-		img
-			border 1px solid darkgray
+
+separatorPadding = 7px
+.participant-inner
+	padding-right separatorPadding
+	border-right 1px dashed lightgray
+	float left
+	text-align center
+	img
+		border 1px solid darkgray
+
+.participant-debts
+	float right
+	color offBlackText
+	ul
+		margin-left separatorPadding
+		list-style-type none
 
 .drag-over
-	border participantBorderSize dotted lightblue
-	border-radius 50%
+	border participantBorderSize dashed lightblue
 
 #add-debt-container
 	z-index 100
@@ -93,4 +103,7 @@ participantBorderSize = 2px
 		display block  
 	.hide-on-edit
 		display none !important 
+
+textarea.editable
+	outline none
 
